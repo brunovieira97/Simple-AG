@@ -12,12 +12,12 @@
 #include <iostream>
 
 // Constants
-static const int population_size = 10
-static const int generations = 10
+#define population_size 10
+#define generations 10
 
-static const double PROB_MUT = 0.0;             // percentual (0..1)
-static const double ag_range = 20.0;            // teste com 1?
-static const double ag_range_offset = 10.0;     // teste com 0?
+double PROB_MUT = 0.0;             // percentual (0..1)
+double ag_range = 20.0;            // teste com 1?
+double ag_range_offset = 10.0;     // teste com 0?
 
 /*
 	0, 1: 	function variables
@@ -35,8 +35,8 @@ int CreatePopulation() {
 			pop[i][1] = (float) rand() / (float) RAND_MAX; 
 	 	*/
 
-		pop[i][0] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
-3		pop[i][1] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
+		population[i][0] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
+		population[i][1] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
 	}
 	return 0;
 }
@@ -44,7 +44,7 @@ int CreatePopulation() {
 // Prints population on screen
 int ShowPopulation() {
 	for (int i = 0; i < population_size; i++) {
-		printf("%d %.3f %.3f\n",i, pop[i][0],pop[i][1]);
+		printf("%d %.3f %.3f\n",i, population[i][0],population[i][1]);
 	}
 	return 0;
 }
@@ -52,7 +52,7 @@ int ShowPopulation() {
 // Prints population and fitness on screen
 int ShowPopulationWithFitness() {
 	for (int i = 0; i < population_size; i++) {
-		printf("%d %.3f %.3f fit: %.3f\n",i, pop[i][0],pop[i][1],pop[i][2]);
+		printf("%d %.3f %.3f fit: %.3f\n", i, population[i][0], population[i][1], population[i][2]);
 	}
 	return 0;
 }
@@ -60,7 +60,7 @@ int ShowPopulationWithFitness() {
 // Calculates fitness
 int CalculateFitness() {
 	for (int i = 0; i < population_size; i++) {
-		pop[i][2] = (pop[i][0] * pop[i][0]) + (pop[i][1] * pop[i][1]); 
+		population[i][2] = (population[i][0] * population[i][0]) + (population[i][1] * population[i][1]); 
 	}
 	return 0;
 }
@@ -70,8 +70,8 @@ int GetMinor() {
 	int minor_index = 0;
 
 	for (int i = 0; i < population_size; i++) {
-		if (menor > pop[i][2]) {
-			menor = pop[i][2];
+		if (menor > population[i][2]) {
+			menor = population[i][2];
 			minor_index = i;
 		}
 	}
@@ -80,8 +80,8 @@ int GetMinor() {
 
 int Crossover(int minor_index) {
 	for (int i = 0; i < population_size; i++) {
-		pop[i][0] = (pop[i][0] + pop[minor_index][0]) / 2.0;
-		pop[i][1] = (pop[i][1] + pop[minor_index][1]) / 2.0;
+		population[i][0] = (population[i][0] + population[minor_index][0]) / 2.0;
+		population[i][1] = (population[i][1] + population[minor_index][1]) / 2.0;
 	}
 	return 0;
 }
@@ -91,7 +91,7 @@ int UniformMutationWithoutElitism() {
 		for (int j = 0; j < 2; j++) {
 			float r = rand() / (float) RAND_MAX;
 			if (r < PROB_MUT) {
-				pop[i][j] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
+				population[i][j] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
 			}
 		}
 	}
@@ -104,7 +104,7 @@ int UniformMutationWithElitism(int minor_index) {
 			for (int j = 0; j < 2; j++) {
 				float r = rand() / (float) RAND_MAX;
 				if (r < PROB_MUT) {
-					pop[i][j] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
+					population[i][j] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
 				}
 			}
 		}
@@ -123,7 +123,7 @@ int GaussMutationWithoutElitism() {
 				q = q / 4.0;                       // valor entre + 0.25 e -0.25
 				q = 1.0 + q;                       // valor entre 0.75 e 1.25  
 
-				pop[i][j] = pop[i][j] * q;
+				population[i][j] = population[i][j] * q;
 			}
 		}
 	}
@@ -142,7 +142,7 @@ int GaussMutationWithElitism(int minor_index) {
 					q = q / 4.0;                       // valor entre + 0.25 e -0.25
 					q = 1.0 + q;                       // valor entre 0.75 e 1.25  
 
-					pop[i][j] = pop[i][j] * q;
+					population[i][j] = population[i][j] * q;
 				}
 			}
 		}
@@ -188,7 +188,7 @@ int main() {
 		
 		// View only
 		minor_index = GetMinor(); 
-		printf("\nBest: %d %.3f\n",minor_index, pop[minor_index][2]);
+		printf("\nBest: %d %.3f\n",minor_index, population[minor_index][2]);
 		
 		getchar();
 
