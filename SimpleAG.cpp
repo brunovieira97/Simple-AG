@@ -15,7 +15,7 @@
 #define population_size 10
 #define generations 10
 
-double PROB_MUT = 0.0;             // percentual (0..1)
+double mutation = 0.0;             // percentual (0..1)
 double ag_range = 20.0;            // teste com 1?
 double ag_range_offset = 10.0;     // teste com 0?
 
@@ -66,12 +66,12 @@ int CalculateFitness() {
 }
 
 int GetMinor() {
-	float menor = (float) RAND_MAX;
+	float minor = (float) RAND_MAX;
 	int minor_index = 0;
 
 	for (int i = 0; i < population_size; i++) {
-		if (menor > population[i][2]) {
-			menor = population[i][2];
+		if (minor > population[i][2]) {
+			minor = population[i][2];
 			minor_index = i;
 		}
 	}
@@ -90,7 +90,7 @@ int UniformMutationWithoutElitism() {
 	for (int i = 0; i < population_size; i++) {
 		for (int j = 0; j < 2; j++) {
 			float r = rand() / (float) RAND_MAX;
-			if (r < PROB_MUT) {
+			if (r < mutation) {
 				population[i][j] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
 			}
 		}
@@ -103,7 +103,7 @@ int UniformMutationWithElitism(int minor_index) {
 		if (i != minor_index) {
 			for (int j = 0; j < 2; j++) {
 				float r = rand() / (float) RAND_MAX;
-				if (r < PROB_MUT) {
+				if (r < mutation) {
 					population[i][j] = (((float) rand() / (float) RAND_MAX) * ag_range) - ag_range_offset;
 				}
 			}
@@ -116,7 +116,7 @@ int GaussMutationWithoutElitism() {
 	for (int i = 0; i < population_size; i++) {
 		for (int j = 0; j < 2;j++) {
 			float r = rand() / (float) RAND_MAX;
-			if (r < PROB_MUT) {
+			if (r < mutation) {
 				float q;
 				q = rand() / (float) RAND_MAX;     // valor entre 0 e 1
 				q = (q * 2.0) - 1.0;               // valor entre -1 e 1
@@ -135,7 +135,7 @@ int GaussMutationWithElitism(int minor_index) {
 		if (i != minor_index) {
 			for (int j = 0; j < 2; j++) {
 				float r = rand() / (float) RAND_MAX;
-				if (r < PROB_MUT) {
+				if (r < mutation) {
 					float q;
 					q = rand() / (float) RAND_MAX;     // valor entre 0 e 1
 					q = (q * 2.0) - 1.0;               // valor entre -1 e 1
@@ -188,7 +188,7 @@ int main() {
 		
 		// View only
 		minor_index = GetMinor(); 
-		printf("\nBest: %d %.3f\n",minor_index, population[minor_index][2]);
+		printf("\nBest: %d %.3f\n", minor_index, population[minor_index][2]);
 		
 		getchar();
 
