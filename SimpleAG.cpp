@@ -1,7 +1,7 @@
 /*
 	Simple AG
 	Author: Bruno Vieira - github.com/brunovieira97
-	Artificial Intelligence - Unisnios - 2018/1
+	Artificial Intelligence - Unisinos - 2018/1
 */
 
 // Dependencies
@@ -11,13 +11,15 @@
 #include <stdlib.h>
 #include <iostream>
 
+using namespace std;
+
 // Constants
 #define population_size 10
 #define generations 10
 
-double mutation = 0.0;             // percentual (0..1)
-double ag_range = 20.0;            // teste com 1?
-double ag_range_offset = 10.0;     // teste com 0?
+double mutation = 1.0;             // percentual (0..1)
+double ag_range = 2.0;            // teste com 1?
+double ag_range_offset = 100.0;     // teste com 0?
 
 /*
 	0, 1: 	function variables
@@ -65,7 +67,27 @@ int CalculateFitness() {
 	return 0;
 }
 
-int GetMinor() {
+// New Fitness function, provided by Gustavo Pessin
+int CalculateNewFitness() {
+	for (int i = 0; i < population_size; i++) {
+		population[i][2] = (
+			(
+				sin(pow(population[i][0], 3)) +
+				sin(pow(population[i][0], 2)) +
+				sin(population[i][1])
+			) * 3
+		) + (
+			sqrt((
+				pow(population[i][0], 2) +
+				pow(population[i][1], 2)
+			))
+		);
+	}
+	return 0;
+
+}
+
+int FindMinor() {
 	float minor = (float) RAND_MAX;
 	int minor_index = 0;
 
@@ -78,10 +100,31 @@ int GetMinor() {
 	return minor_index;
 }
 
+// Finds the best fitness for tournament selection
+int FindMinorForTournament(int indexes[3]) {
+	float minor = (float) RAND_MAX;
+	int minor_index = 0;
+
+	for (int i = 0; i < 3; i++) {
+		if(minor > indexes[i]) {
+			minor = indexes[i];
+			minor_index = i;
+		}
+	}
+	return minor_index;
+}
+
 int Crossover(int minor_index) {
 	for (int i = 0; i < population_size; i++) {
 		population[i][0] = (population[i][0] + population[minor_index][0]) / 2.0;
 		population[i][1] = (population[i][1] + population[minor_index][1]) / 2.0;
+	}
+	return 0;
+}
+
+int NewCrossover(int population_index, int index1, int index2) {
+	for (int i = 0; i < 3; i++) {
+		population[population_index][i] = (population[index1][i] + population[index2][i]) / 2.0;
 	}
 	return 0;
 }
@@ -150,6 +193,30 @@ int GaussMutationWithElitism(int minor_index) {
 	return 0;
 }
 
+int TournamentSelection() {
+	srand(time(NULL));
+	for (int i = 0; i < population_size; i++) {
+		int first_sort[3] = {
+			(rand() % population_size),
+			(rand() % population_size),
+			(rand() % population_size)
+		};
+		int second_sort[3] = {
+			(rand() % population_size),
+			(rand() % population_size),
+			(rand() % population_size)
+		};
+
+		int first_element = FindMinorForTournament(first_sort);
+		int second_element = FindMinorForTournament(second_sort);
+
+		NewCrossover(i, first_element, second_element);
+	}
+	return 0;
+}
+
+
+
 int main() {
 	srand(time(NULL));       
 
@@ -169,16 +236,18 @@ int main() {
 
 	while (g < generations) {
 		// Selection
-		int minor_index = GetMinor(); 
+		int minor_index = FindMinor(); 
 			
 		// Crossover
-		Crossover(minor_index);
+		//Crossover(minor_index);
 
 		// Mutation
 		//UniformMutationWithElitism(minor_index);
 		//UniformMutationWithoutElitism();
-		GaussMutationWithElitism(minor_index);
+		//GaussMutationWithElitism(minor_index);
 		//GaussMutationWithoutElitism();
+
+		TournamentSelection();
 
 		// Fitness
 		CalculateFitness();
@@ -187,7 +256,7 @@ int main() {
 		ShowPopulationWithFitness();
 		
 		// View only
-		minor_index = GetMinor(); 
+		minor_index = FindMinor(); 
 		printf("\nBest: %d %.3f\n", minor_index, population[minor_index][2]);
 		
 		getchar();
