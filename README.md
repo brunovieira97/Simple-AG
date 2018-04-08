@@ -4,7 +4,7 @@ O objetivo deste projeto é aplicar os conceitos de inteligência artificial, co
 
 ## Roadmap
 * Aplicar nova função para cálculo de fitness - pronto
-* Implementar novo método de seleção - em andamento
+* Implementar novo método de seleção - pronto (Torneio de 3)
 * Utilizar método evolutivo adicional:
     * Particle Swarm Optimization
     * Differential Evolution
